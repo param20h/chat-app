@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h3>Online Users</h3>
+            <ul id="userList"></ul>
+        </div>
+        <div class="chat-area">
+            <div class="header">
+                <h2>Chat Room</h2>
+                <div id="username-display"></div>
+            </div>
+            <div id="messages"></div>
+            <div id="typing"></div>
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Type your message..." disabled>
+                <button id="sendBtn" disabled>Send</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Join Chat</h2>
+            <input type="text" id="usernameInput" placeholder="Enter your username" maxlength="20">
+            <button id="joinBtn">Join</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

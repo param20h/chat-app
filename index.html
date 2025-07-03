@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        #messages { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; margin-bottom: 10px; }
+        #messageInput { width: 70%; padding: 5px; }
+        #sendBtn { padding: 5px 10px; }
+        .message { margin: 5px 0; }
+        .user { font-weight: bold; color: #007bff; }
+    </style>
+</head>
+<body>
+    <h1>Chat App</h1>
+    <div>
+        <label>Your name: </label>
+        <input type="text" id="nameInput" placeholder="Enter your name" value="Person 1" />
+    </div><br>
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Type your message..." />
+    <button id="sendBtn">Send</button>
+
+    <script>
+        const messages = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function addMessage(user, text) {
+            const div = document.createElement('div');
+            div.className = 'message';
+            div.innerHTML = `<span class="user">${user}:</span> ${text}`;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            const name = document.getElementById('nameInput').value.trim() || 'Anonymous';
+            if (text) {
+                addMessage(name, text);
+                messageInput.value = '';
+                
+                // Store message in localStorage for other person to see
+                const messages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+                messages.push({ user: name, text: text, timestamp: Date.now() });
+                localStorage.setItem('chatMessages', JSON.stringify(messages));
+            }
+        }
+
+        function loadMessages() {
+            const storedMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+            storedMessages.forEach(msg => addMessage(msg.user, msg.text));
+        }
+
+        // Load existing messages on page load
+        loadMessages();
+
+        // Check for new messages every second
+        setInterval(() => {
+            const currentCount = document.querySelectorAll('.message').length;
+            const storedMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+            if (storedMessages.length > currentCount) {
+                const newMessages = storedMessages.slice(currentCount);
+                newMessages.forEach(msg => addMessage(msg.user, msg.text));
+            }
+        }, 1000);
+
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
