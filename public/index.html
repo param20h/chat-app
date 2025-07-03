@@ -2,24 +2,83 @@
 <html>
 <head>
     <title>Chat App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <div class="sidebar">
-            <h3>Online Users</h3>
-            <ul id="userList"></ul>
+        <div class="sidebar" id="sidebar">
+            <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+            <div class="profile-section">
+                <div class="user-avatar" id="userAvatar">👤</div>
+                <div class="user-status">
+                    <select id="statusSelect">
+                        <option value="online">🟢 Online</option>
+                        <option value="away">🟡 Away</option>
+                        <option value="busy">🔴 Busy</option>
+                    </select>
+                </div>
+            </div>
+            <div class="room-section">
+                <h3>Rooms</h3>
+                <select id="roomSelect">
+                    <option value="general">General</option>
+                    <option value="random">Random</option>
+                    <option value="tech">Tech</option>
+                </select>
+                <input type="text" id="newRoomInput" placeholder="New room name">
+                <button id="createRoomBtn">Create</button>
+            </div>
+            <div class="users-section">
+                <h3>Online Users (<span id="userCount">0</span>)</h3>
+                <ul id="userList"></ul>
+            </div>
         </div>
         <div class="chat-area">
             <div class="header">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
                 <h2>Chat Room</h2>
-                <div id="username-display"></div>
+                <div class="header-controls">
+                    <input type="text" id="searchInput" placeholder="Search..." />
+                    <input type="file" id="fileInput" accept="image/*,*" style="display: none;" />
+                    <button id="fileBtn">📎</button>
+                    <button id="themeToggle">🌙</button>
+                    <button id="notificationToggle">🔔</button>
+                    <div class="user-info">
+                        <span id="username-display"></span>
+                        <button id="changeUsernameBtn">Change</button>
+                    </div>
+                </div>
             </div>
-            <div id="messages"></div>
+            <div id="messages" ondrop="handleDrop(event)" ondragover="handleDragOver(event)"></div>
             <div id="typing"></div>
+            <div class="reaction-picker" id="reactionPicker" style="display: none;">
+                <span class="reaction" data-emoji="👍">👍</span>
+                <span class="reaction" data-emoji="❤️">❤️</span>
+                <span class="reaction" data-emoji="😂">😂</span>
+                <span class="reaction" data-emoji="😮">😮</span>
+                <span class="reaction" data-emoji="😢">😢</span>
+                <span class="reaction" data-emoji="🎉">🎉</span>
+            </div>
             <div class="input-area">
-                <input type="text" id="messageInput" placeholder="Type your message..." disabled>
-                <button id="sendBtn" disabled>Send</button>
+                <div class="reply-preview" id="replyPreview" style="display: none;">
+                    <span id="replyText"></span>
+                    <button id="cancelReply">✕</button>
+                </div>
+                <div class="input-controls">
+                    <button id="emojiBtn">😀</button>
+                    <input type="text" id="messageInput" placeholder="Type your message... (or /pm username message for private)" disabled>
+                    <button id="voiceBtn">🎤</button>
+                    <button id="sendBtn" disabled>Send</button>
+                    <button id="clearBtn">Clear</button>
+                </div>
+                <div class="emoji-picker" id="emojiPicker" style="display: none;">
+                    <div class="emoji-grid">
+                        <span class="emoji-item">😀</span><span class="emoji-item">😂</span><span class="emoji-item">😍</span><span class="emoji-item">🤔</span>
+                        <span class="emoji-item">😎</span><span class="emoji-item">😢</span><span class="emoji-item">😡</span><span class="emoji-item">🎉</span>
+                        <span class="emoji-item">👍</span><span class="emoji-item">👎</span><span class="emoji-item">❤️</span><span class="emoji-item">🔥</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -29,6 +88,15 @@
             <h2>Join Chat</h2>
             <input type="text" id="usernameInput" placeholder="Enter your username" maxlength="20">
             <button id="joinBtn">Join</button>
+        </div>
+    </div>
+
+    <div id="changeNameModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Change Username</h2>
+            <input type="text" id="newUsernameInput" placeholder="Enter new username" maxlength="20">
+            <button id="confirmChangeBtn">Change</button>
+            <button id="cancelChangeBtn">Cancel</button>
         </div>
     </div>
 
