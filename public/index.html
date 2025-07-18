@@ -8,76 +8,64 @@
 <body>
     <div class="container">
         <div class="sidebar" id="sidebar">
-            <button class="sidebar-toggle" id="sidebarToggle">☰</button>
-            <div class="profile-section">
-                <div class="user-avatar" id="userAvatar">👤</div>
-                <div class="user-status">
-                    <select id="statusSelect">
-                        <option value="online">🟢 Online</option>
-                        <option value="away">🟡 Away</option>
-                        <option value="busy">🔴 Busy</option>
-                    </select>
-                </div>
-            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            
             <div class="room-section">
                 <h3>Rooms</h3>
-                <select id="roomSelect">
-                    <option value="general">General</option>
-                    <option value="random">Random</option>
-                    <option value="tech">Tech</option>
-                </select>
-                <input type="text" id="newRoomInput" placeholder="New room name">
-                <button id="createRoomBtn">Create</button>
+                <div class="room-list" id="roomList">
+                    <div class="room-item active" data-room="general">
+                        <span>🌍 General</span>
+                    </div>
+                </div>
+                <div class="create-room">
+                    <input type="text" id="newRoomInput" placeholder="Room name" maxlength="20">
+                    <input type="password" id="roomPasswordInput" placeholder="Password (optional)">
+                    <button id="createRoomBtn">Create Room</button>
+                </div>
             </div>
+            
             <div class="users-section">
                 <h3>Online Users (<span id="userCount">0</span>)</h3>
                 <ul id="userList"></ul>
             </div>
         </div>
+        
         <div class="chat-area">
             <div class="header">
-                <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
                 <h2>Chat Room</h2>
                 <div class="header-controls">
-                    <input type="text" id="searchInput" placeholder="Search..." />
-                    <input type="file" id="fileInput" accept="image/*,*" style="display: none;" />
-                    <button id="fileBtn">📎</button>
-                    <button id="themeToggle">🌙</button>
-                    <button id="notificationToggle">🔔</button>
+                    <button class="profile-btn" id="profileBtn" title="Edit Profile">
+                        <span class="profile-icon">👤</span>
+                    </button>
+                    <button class="sound-toggle" id="soundToggle">
+                        <span class="sound-icon">🔊</span>
+                    </button>
+                    <button class="theme-toggle" id="themeToggle">
+                        <span class="theme-icon">🌙</span>
+                        <span class="theme-text">Dark</span>
+                    </button>
                     <div class="user-info">
                         <span id="username-display"></span>
-                        <button id="changeUsernameBtn">Change</button>
                     </div>
                 </div>
             </div>
-            <div id="messages" ondrop="handleDrop(event)" ondragover="handleDragOver(event)"></div>
+            
+            <div id="messages"></div>
             <div id="typing"></div>
-            <div class="reaction-picker" id="reactionPicker" style="display: none;">
-                <span class="reaction" data-emoji="👍">👍</span>
-                <span class="reaction" data-emoji="❤️">❤️</span>
-                <span class="reaction" data-emoji="😂">😂</span>
-                <span class="reaction" data-emoji="😮">😮</span>
-                <span class="reaction" data-emoji="😢">😢</span>
-                <span class="reaction" data-emoji="🎉">🎉</span>
-            </div>
+            
             <div class="input-area">
                 <div class="reply-preview" id="replyPreview" style="display: none;">
-                    <span id="replyText"></span>
-                    <button id="cancelReply">✕</button>
+                    <div class="reply-content">
+                        <span class="reply-to">Replying to <strong id="replyUsername"></strong>:</span>
+                        <span class="reply-message" id="replyMessage"></span>
+                    </div>
+                    <button class="cancel-reply" id="cancelReply">✕</button>
                 </div>
                 <div class="input-controls">
-                    <button id="emojiBtn">😀</button>
-                    <input type="text" id="messageInput" placeholder="Type your message... (or /pm username message for private)" disabled>
-                    <button id="voiceBtn">🎤</button>
+                    <input type="file" id="fileInput" style="display: none;" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip">
+                    <button class="file-btn" id="fileBtn" title="Upload file">📎</button>
+                    <input type="text" id="messageInput" placeholder="Type your message..." disabled>
                     <button id="sendBtn" disabled>Send</button>
-                    <button id="clearBtn">Clear</button>
-                </div>
-                <div class="emoji-picker" id="emojiPicker" style="display: none;">
-                    <div class="emoji-grid">
-                        <span class="emoji-item">😀</span><span class="emoji-item">😂</span><span class="emoji-item">😍</span><span class="emoji-item">🤔</span>
-                        <span class="emoji-item">😎</span><span class="emoji-item">😢</span><span class="emoji-item">😡</span><span class="emoji-item">🎉</span>
-                        <span class="emoji-item">👍</span><span class="emoji-item">👎</span><span class="emoji-item">❤️</span><span class="emoji-item">🔥</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -91,12 +79,53 @@
         </div>
     </div>
 
-    <div id="changeNameModal" class="modal" style="display: none;">
+    <div id="roomPasswordModal" class="modal" style="display: none;">
         <div class="modal-content">
-            <h2>Change Username</h2>
-            <input type="text" id="newUsernameInput" placeholder="Enter new username" maxlength="20">
-            <button id="confirmChangeBtn">Change</button>
-            <button id="cancelChangeBtn">Cancel</button>
+            <h2>Room Password Required</h2>
+            <p>Enter password for room: <strong id="roomNameDisplay"></strong></p>
+            <input type="password" id="roomPasswordPrompt" placeholder="Enter room password">
+            <button id="joinRoomBtn">Join Room</button>
+            <button id="cancelJoinBtn">Cancel</button>
+        </div>
+    </div>
+
+    <div id="profileModal" class="modal" style="display: none;">
+        <div class="modal-content profile-modal">
+            <h2>User Profile</h2>
+            <div class="profile-section">
+                <div class="profile-avatar" id="profileAvatar"></div>
+                <div class="profile-info">
+                    <h3 id="profileUsername"></h3>
+                    <div class="profile-status">
+                        <label>Status:</label>
+                        <select id="profileStatus">
+                            <option value="online">🟢 Online</option>
+                            <option value="away">🟡 Away</option>
+                            <option value="busy">🔴 Busy</option>
+                            <option value="offline">⚫ Offline</option>
+                        </select>
+                    </div>
+                    <div class="profile-bio">
+                        <label>Bio:</label>
+                        <textarea id="profileBio" placeholder="Tell others about yourself..." maxlength="200"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <button id="saveProfileBtn">Save Changes</button>
+                <button id="closeProfileBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="reaction-picker" id="reactionPicker" style="display: none;">
+        <div class="reaction-grid">
+            <span class="reaction-emoji" data-emoji="👍">👍</span>
+            <span class="reaction-emoji" data-emoji="❤️">❤️</span>
+            <span class="reaction-emoji" data-emoji="😂">😂</span>
+            <span class="reaction-emoji" data-emoji="😮">😮</span>
+            <span class="reaction-emoji" data-emoji="😢">😢</span>
+            <span class="reaction-emoji" data-emoji="🎉">🎉</span>
         </div>
     </div>
 
